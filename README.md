@@ -1,20 +1,47 @@
+
 Họ và tên : Nguyễn Duy Cao
 
 MSSV : k205480106005
 
-Hệ thống cảm biến nhiệt độ (Có thể thay đổi cảm biến hoặc kết hợp thêm )
-
+HỆ THỐNG CẢM BIẾN NHIỆT ĐỘ (Có thể thay đổi cảm biến hoặc kết hợp thêm )
+												 
 Tên Project : Sensor
 
-Chức năng : 
+1.Chức năng: 
 
-![image](https://github.com/mmm44455/Api_cam_bien/assets/132626865/7b0ba438-d4cd-4073-9b29-ee75b7e7a85e)
+		- Đẩy dữ liệu từ Arduino lên NodeRed dưới dạng Json (Đây là bước quan trọng )
+	
+		-	Dữ liệu sẽ được lấy trong khoảng thời gian bao lâu của hệ thống ( NodeRed sẽ làm vấn đề này )
+	
+		- Lấy dữ liệu NodeRed để vẽ biểu đồ 
+	
+		- Tạo 1 trang web hiển thị biểu đồ dữ liệu nhận được
 
-Sơ đồ tổng quát mà hệ thống sẽ hoạt động:
+2.Sơ đồ tổng quát mà hệ thống sẽ hoạt động:
+ 
+![image](https://github.com/mmm44455/Api_cam_bien/assets/132626865/c0e88cd2-bd61-419b-a5d0-a26e3b6ad71c)
 
-![image](https://github.com/mmm44455/Api_cam_bien/assets/132626865/2d69a2c5-f768-445a-8ac0-98beb09697b1)
+3.CSDL : 
 
-CSDL : 
+  Tạo 1 CSDL gồm 1 bảng lưu về : 
+	
+				nhiệt độ :int
+		
+				thời gian : datetime
+		
+				id (khóa chính) : int (tự tăng )
+		
+				Tình trạng : boolen
+		
+	Cần tạo 2 Sp là select và insert into để hiển thị biểu đồ và lưu dữ liệu vào Db
+
+4.Module đọc dữ liệu :  Python + FastAPI để tao Api nhận dữ liệu từ mạch Arduino và đưa lên NodeRed 
+
+5.Nodered: Nhận dữ liệu từ Api sau đó lưu vào Db đã được cấu hình sẵn (sử dụng Sp để nhận và lấy dữ liệu)
+
+6.Tạo Web : Sử dụng html,css,js , gg chart để vẽ biểu đồ nhận được dữ liệu trong  đó js sẽ lấy dữ liệu(json) qua ajax tới api.aspx hoặc api.php.
+
+
 
 
 
