@@ -39,7 +39,9 @@ Tên Project : Sensor
 
 5.Nodered: Nhận dữ liệu từ Api sau đó lưu vào Db đã được cấu hình sẵn (sử dụng Sp để nhận và lấy dữ liệu)
 
-6.Tạo Web : Sử dụng html,css,js , gg chart để vẽ biểu đồ nhận được dữ liệu trong  đó js sẽ lấy dữ liệu(json) qua ajax tới api.aspx hoặc api.php.
+6.Arduino: code chương trình cho mạch Arduino Nano sử dụng chung với Cảm biến nhiệt độ (cần biết cách đưa dữ liệu Arduino nhận được về Api Python dùng nhận dữ liệu)
+
+7.Tạo Web : Sử dụng html,css,js , gg chart để vẽ biểu đồ nhận được dữ liệu trong  đó js sẽ lấy dữ liệu(json) qua ajax tới api.aspx hoặc api.php.
 
 
 
