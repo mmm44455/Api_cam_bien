@@ -10,6 +10,8 @@ Chức năng :
 
 ![image](https://github.com/mmm44455/Api_cam_bien/assets/132626865/7b0ba438-d4cd-4073-9b29-ee75b7e7a85e)
 
+Sơ đồ tổng quát mà hệ thống sẽ hoạt động:
+
 ![image](https://github.com/mmm44455/Api_cam_bien/assets/132626865/2d69a2c5-f768-445a-8ac0-98beb09697b1)
 
 CSDL : 
