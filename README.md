@@ -31,7 +31,7 @@ Tên Project : Sensor
 		
 				id (khóa chính) : int (tự tăng )
 		
-				Tình trạng : boolen
+				Tình trạng : BIT
 		
 	Cần tạo 2 Sp là select và insert into để hiển thị biểu đồ và lưu dữ liệu vào Db
 
