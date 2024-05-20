@@ -21,7 +21,7 @@
                 "vt": "str"
             }
         ],
-        "repeat": "",
+        "repeat": "120",
         "crontab": "",
         "once": true,
         "onceDelay": 0.1,
@@ -53,29 +53,12 @@
         "senderr": false,
         "headers": [],
         "x": 310,
-        "y": 280,
+        "y": 200,
         "wires": [
             [
                 "49233981566bdac6"
             ]
         ]
-    },
-    {
-        "id": "162982d964e63d6f",
-        "type": "debug",
-        "z": "385c5594aae09dba",
-        "name": "debug 4",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 780,
-        "y": 300,
-        "wires": []
     },
     {
         "id": "49496fe5d71adb70",
@@ -86,49 +69,49 @@
         "outField": "payload",
         "returnType": 0,
         "throwErrors": 1,
-        "query": "",
+        "query": "InsertApi",
         "modeOpt": "",
-        "modeOptType": "query",
-        "queryOpt": "payload",
-        "queryOptType": "msg",
-        "paramsOpt": "queryParams",
-        "paramsOptType": "msg",
+        "modeOptType": "execute",
+        "queryOpt": "",
+        "queryOptType": "editor",
+        "paramsOpt": "",
+        "paramsOptType": "editor",
         "rows": "rows",
         "rowsType": "msg",
         "parseMustache": true,
         "params": [
             {
                 "output": false,
-                "name": "nhietdo",
+                "name": "temperature",
+                "type": "Float",
+                "valueType": "msg",
+                "value": "payload.temperature",
+                "options": {
+                    "nullable": true,
+                    "primary": false,
+                    "identity": false,
+                    "readOnly": false
+                }
+            },
+            {
+                "output": false,
+                "name": "humidity",
+                "type": "Float",
+                "valueType": "msg",
+                "value": "payload.humidity",
+                "options": {
+                    "nullable": true,
+                    "primary": false,
+                    "identity": false,
+                    "readOnly": false
+                }
+            },
+            {
+                "output": false,
+                "name": "timestamp",
                 "type": "nvarchar(50)",
                 "valueType": "msg",
-                "value": "payload.name",
-                "options": {
-                    "nullable": true,
-                    "primary": false,
-                    "identity": false,
-                    "readOnly": false
-                }
-            },
-            {
-                "output": false,
-                "name": "doam",
-                "type": "nvarchar(50)",
-                "valueType": "num",
-                "value": "payload.name",
-                "options": {
-                    "nullable": true,
-                    "primary": false,
-                    "identity": false,
-                    "readOnly": false
-                }
-            },
-            {
-                "output": false,
-                "name": "time",
-                "type": "DateTime",
-                "valueType": "num",
-                "value": "payload.name",
+                "value": "payload.timestamp",
                 "options": {
                     "nullable": true,
                     "primary": false,
@@ -137,12 +120,10 @@
                 }
             }
         ],
-        "x": 720,
-        "y": 180,
+        "x": 700,
+        "y": 200,
         "wires": [
-            [
-                "162982d964e63d6f"
-            ]
+            []
         ]
     },
     {
@@ -154,7 +135,7 @@
         "action": "",
         "pretty": false,
         "x": 450,
-        "y": 340,
+        "y": 200,
         "wires": [
             [
                 "d33e0dd12b9026b5"
@@ -166,15 +147,15 @@
         "type": "function",
         "z": "385c5594aae09dba",
         "name": "function 5",
-        "func": "// Chuyển đổi chuỗi JSON thành các biến\nvar data = JSON.parse(msg.payload);\nvar temperature = data.temperature;\nvar humidity = data.humidity;\nvar timestamp = data.timestamp;\n\n// Gọi thủ tục lưu trữ trong SQL Server\nvar sqlQuery = \"EXEC Api_nhiet @nhietdo = \" + temperature + \", @doam = \" + humidity + \", @time = '\" + timestamp + \"'\";\nmsg.payload = sqlQuery;\n\n// Trả về message\nreturn msg;\n",
+        "func": "// Lấy dữ liệu JSON từ đầu vào\nvar data = JSON.parse(msg.payload);\n\n// Trích xuất dữ liệu từ đối tượng JSON\nvar temperature = data.temperature;\nvar humidity = data.humidity;\nvar timestamp = data.timestamp;\n\n// Lưu trữ dữ liệu vào một đối tượng để truyền vào node MSSQL-PLUS\nvar sqlData = {\n    temperature: temperature,\n    humidity: humidity,\n    timestamp: timestamp\n};\n\n// Gửi dữ liệu vào output cho node MSSQL-PLUS\nmsg.payload = sqlData;\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 540,
-        "y": 140,
+        "x": 580,
+        "y": 120,
         "wires": [
             [
                 "49496fe5d71adb70"
@@ -182,10 +163,85 @@
         ]
     },
     {
+        "id": "a927da9ceabfccc7",
+        "type": "http in",
+        "z": "385c5594aae09dba",
+        "name": "",
+        "url": "/getdata",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 170,
+        "y": 340,
+        "wires": [
+            [
+                "8d6ce1392733d570"
+            ]
+        ]
+    },
+    {
+        "id": "8d6ce1392733d570",
+        "type": "MSSQL",
+        "z": "385c5594aae09dba",
+        "mssqlCN": "0a9e607d3e6ecf26",
+        "name": "",
+        "outField": "payload",
+        "returnType": 0,
+        "throwErrors": 1,
+        "query": "SelectApi",
+        "modeOpt": "",
+        "modeOptType": "execute",
+        "queryOpt": "payload",
+        "queryOptType": "editor",
+        "paramsOpt": "queryParams",
+        "paramsOptType": "none",
+        "rows": "rows",
+        "rowsType": "msg",
+        "parseMustache": true,
+        "params": [],
+        "x": 480,
+        "y": 340,
+        "wires": [
+            [
+                "af37c52fd26eca72"
+            ]
+        ]
+    },
+    {
+        "id": "af37c52fd26eca72",
+        "type": "http response",
+        "z": "385c5594aae09dba",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 710,
+        "y": 340,
+        "wires": []
+    },
+    {
         "id": "1cadf1570aa70a2c",
         "type": "MSSQL-CN",
         "tdsVersion": "7_4",
         "name": "Sql Sever",
+        "server": "DUYCAO",
+        "port": "1433",
+        "encyption": true,
+        "trustServerCertificate": true,
+        "database": "Api_Cambien",
+        "useUTC": true,
+        "connectTimeout": "15000",
+        "requestTimeout": "15000",
+        "cancelTimeout": "5000",
+        "pool": "5",
+        "parseJSON": false,
+        "enableArithAbort": true,
+        "readOnlyIntent": false
+    },
+    {
+        "id": "0a9e607d3e6ecf26",
+        "type": "MSSQL-CN",
+        "tdsVersion": "7_4",
+        "name": "SQLServer",
         "server": "DUYCAO",
         "port": "1433",
         "encyption": true,

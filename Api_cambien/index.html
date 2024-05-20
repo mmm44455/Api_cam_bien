@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Data Chart</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(() => drawChart());
+
+        function parseTimeString(timeString) {
+            if (!timeString) {
+                return null; // Return null if timeString is null or undefined
+            }
+            const [datePart, timePart] = timeString.split('T');
+            const [year, month, day] = datePart.split('-');
+            const [hour, minute, second] = timePart.split(':');
+            const dateObject = new Date(year, month - 1, day, hour, minute, second.split('.')[0]);
+            return dateObject;
+        }
+
+        function drawChart() {
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        try {
+                            const json = JSON.parse(xhr.responseText);
+                            const dulieu = [['Time', 'Temperature', 'Humidity']];
+                            const dateSet = new Set(); // To store unique dates
+
+                            for (const item of json) {
+                                const itemDate = parseTimeString(item.timestamp);
+                                if (itemDate) { // Only add data if timestamp is valid
+                                    dulieu.push([itemDate, parseFloat(item.temperature), parseFloat(item.humidity)]);
+                                    dateSet.add(itemDate.toISOString().split('T')[0]); // Add the date part to the set
+                                }
+                            }
+
+                            const data = google.visualization.arrayToDataTable(dulieu);
+
+                            // Convert set to array and join with ', ' for title
+                            const dateArray = Array.from(dateSet);
+                            const dateTitle = dateArray.join(', ');
+
+                            const options = {
+                                title: `Lịch sử cảm biến của các ngày: ${dateTitle}`,
+                                legend: { position: 'bottom' },
+                                hAxis: {
+                                    title: 'Time'
+                                },
+                                vAxis: {
+                                    title: 'Value'
+                                },
+                                series: {
+                                    0: { targetAxisIndex: 0 },
+                                    1: { targetAxisIndex: 1 }
+                                },
+                                vAxes: {
+                                    0: { title: 'Temperature' },
+                                    1: { title: 'Humidity' }
+                                }
+                            };
+
+                            const chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+                            chart.draw(data, options);
+                        } catch (error) {
+                            console.error('Error parsing JSON:', error);
+                        }
+                    } else {
+                        console.error('API request failed with status:', xhr.status);
+                    }
+                }
+            };
+
+            xhr.open("GET", "http://127.0.0.1:8000/api/get_data", true);
+            xhr.send();
+        }
+
+        function onDateChange() {
+            drawChart();
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <label for="date-input">Select Date:</label>
+        <input type="date" id="date-input" onchange="onDateChange()">
+    </div>
+    <div id="curve_chart" style="width: 900px; height: 500px"></div>
+</body>
+</html>
