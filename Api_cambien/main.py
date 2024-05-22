@@ -1,13 +1,14 @@
 import serial
 import json
-from datetime import datetime
-from fastapi import FastAPI, HTTPException
+from datetime import datetime, date
+from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import threading
 import requests
 import pyodbc
-# FastAPI app
+from typing import Optional
+
 app = FastAPI()
 
 app.add_middleware(
@@ -16,6 +17,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 # Model for sensor data
 class SensorData(BaseModel):
     temperature: float
@@ -23,7 +25,7 @@ class SensorData(BaseModel):
     timestamp: str
 
 # Global variable to store the latest sensor data
-latest_data =[]
+latest_data = []
 
 # Function to read data from Arduino
 def read_from_arduino():
@@ -53,7 +55,7 @@ thread.start()
 
 @app.get("/api/data", response_model=SensorData)
 def get_data():
-    if latest_data is None:
+    if not latest_data:
         raise HTTPException(status_code=404, detail="No data available")
     return latest_data
 
@@ -76,10 +78,13 @@ def connect_to_database():
                           'DATABASE=Api_Cambien;'
                           'UID=sa;'
                           'PWD=123456')
+
 def execute_stored_procedure(proc_name: str, params: tuple = ()):
     connection = connect_to_database()
     cursor = connection.cursor()
-    cursor.execute(f"EXEC {proc_name} ?", params)
+    query = f"EXEC {proc_name} ?"
+    print(f"Executing query: {query} with params: {params}")
+    cursor.execute(query, params)
     data = cursor.fetchall()
     connection.close()
     return data
@@ -89,12 +94,17 @@ def get_current_date():
     return current_date
 
 @app.get('/api/get_data')
-def get_data():
-    current_date = get_current_date()
-    result = execute_stored_procedure('SelectDate', (current_date,))
-    response = [{'temperature': row[0], 'humidity': row[1], 'timestamp': row[2],'id': row[3] } for row in result]
+def get_data(date: Optional[str] = Query(None)):
+    if date:
+        print(f"Received date parameter: {date}")  # Logging
+        result = execute_stored_procedure('SelectDate', (date,))
+    else:
+        current_date = get_current_date()
+        result = execute_stored_procedure('SelectDate', (current_date,))
+    
+    response = [{'temperature': row[0], 'humidity': row[1], 'timestamp': row[2], 'id': row[3]} for row in result]
+   
     return response
-
 
 if __name__ == "__main__":
     import uvicorn

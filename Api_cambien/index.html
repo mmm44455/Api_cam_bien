@@ -20,13 +20,26 @@
             return dateObject;
         }
 
-        function drawChart() {
+        function formatDate(date) {
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
+        function drawChart(date = null) {
             const xhr = new XMLHttpRequest();
+            let url = "http://127.0.0.1:8000/api/get_data";
+            if (date) {
+                url += `?date=${date}`;
+            }
+            console.log(`Request URL: ${url}`); // Logging URL
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
                         try {
                             const json = JSON.parse(xhr.responseText);
+                            console.log('Received data:', json); // Logging received data
                             const dulieu = [['Time', 'Temperature', 'Humidity']];
                             const dateSet = new Set(); // To store unique dates
 
@@ -40,26 +53,30 @@
 
                             const data = google.visualization.arrayToDataTable(dulieu);
 
-                            // Convert set to array and join with ', ' for title
                             const dateArray = Array.from(dateSet);
-                            const dateTitle = dateArray.join(', ');
+                            const formattedDateArray = dateArray.map(date => {
+                                const dateObj = new Date(date);
+                                return formatDate(dateObj);
+                            });
+
+                            const dateTitle = formattedDateArray.join(', ');
 
                             const options = {
-                                title: `Lịch sử cảm biến của các ngày: ${dateTitle}`,
+                                title: `Lịch sử cảm biến của  ngày: ${dateTitle}`,
                                 legend: { position: 'bottom' },
                                 hAxis: {
-                                    title: 'Time'
+                                    title: 'Thời gian'
                                 },
                                 vAxis: {
-                                    title: 'Value'
+                                    title: 'Giá trị'
                                 },
                                 series: {
                                     0: { targetAxisIndex: 0 },
                                     1: { targetAxisIndex: 1 }
                                 },
                                 vAxes: {
-                                    0: { title: 'Temperature' },
-                                    1: { title: 'Humidity' }
+                                    0: { title: 'Nhiệt độ' },
+                                    1: { title: 'Độ ẩm' }
                                 }
                             };
 
@@ -74,20 +91,29 @@
                 }
             };
 
-            xhr.open("GET", "http://127.0.0.1:8000/api/get_data", true);
+            xhr.open("GET", url, true);
             xhr.send();
         }
 
-        function onDateChange() {
-            drawChart();
+        function updateDataPeriodically() {
+            setInterval(() => {
+                drawChart(document.getElementById('date-input').value);
+            }, 5000); // Update every 5 seconds (adjust as needed)
         }
+
+        function onDateChange() {
+            drawChart(document.getElementById('date-input').value);
+        }
+
+        // Call updateDataPeriodically to start updating data automatically
+        updateDataPeriodically();
     </script>
 </head>
 <body>
     <div>
-        <label for="date-input">Select Date:</label>
+        <label for="date-input">Chọn ngày:</label>
         <input type="date" id="date-input" onchange="onDateChange()">
     </div>
-    <div id="curve_chart" style="width: 900px; height: 500px"></div>
+    <div id="curve_chart" style="width: 1000px; height: 700px"></div>
 </body>
 </html>
