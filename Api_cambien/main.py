@@ -72,39 +72,6 @@ def get_sensor_data():
     except requests.RequestException as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def connect_to_database():
-    return pyodbc.connect('DRIVER={SQL Server};'
-                          'SERVER=DUYCAO;'
-                          'DATABASE=Api_Cambien;'
-                          'UID=sa;'
-                          'PWD=123456')
-
-def execute_stored_procedure(proc_name: str, params: tuple = ()):
-    connection = connect_to_database()
-    cursor = connection.cursor()
-    query = f"EXEC {proc_name} ?"
-    print(f"Executing query: {query} with params: {params}")
-    cursor.execute(query, params)
-    data = cursor.fetchall()
-    connection.close()
-    return data
-
-def get_current_date():
-    current_date = datetime.now().strftime('%Y-%m-%d')
-    return current_date
-
-@app.get('/api/get_data')
-def get_data(date: Optional[str] = Query(None)):
-    if date:
-        print(f"Received date parameter: {date}")  # Logging
-        result = execute_stored_procedure('SelectDate', (date,))
-    else:
-        current_date = get_current_date()
-        result = execute_stored_procedure('SelectDate', (current_date,))
-    
-    response = [{'temperature': row[0], 'humidity': row[1], 'timestamp': row[2], 'id': row[3]} for row in result]
-   
-    return response
 
 if __name__ == "__main__":
     import uvicorn
