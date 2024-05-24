@@ -103,8 +103,8 @@
                                     title: 'Giá trị'
                                 },
                                 series: {
-                                    0: { targetAxisIndex: 0 },
-                                    1: { targetAxisIndex: 1 }
+                                    0: { targetAxisIndex: 0, lineWidth: 2, pointSize: 5 },
+                                    1: { targetAxisIndex: 1, lineWidth: 2, pointSize: 5 }
                                 },
                                 vAxes: {
                                     0: { title: 'Nhiệt độ' },
@@ -151,8 +151,8 @@
         <input type="date" id="date-input" onchange="onDateChange()">
     </div>
     <div class="Api_body" style="width:100%">
-    <div id="curve_chart" style="width: 65%; height: 700px"></div>
-    <div id="alert" style="margin-top: 20px;font-family: cursive; font-size: 16px; color: red;width:35%"></div>
+        <div id="curve_chart" style="width: 65%; height: 700px"></div>
+        <div id="alert" style="margin-top: 20px; font-family: cursive; font-size: 16px; color: red; width:35%"></div>
     </div>
 </body>
 </html>

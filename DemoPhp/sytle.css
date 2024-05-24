@@ -1,5 +1,25 @@
-.Api_body{
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+#date-input {
+    margin-bottom: 20px;
+}
+
+.Api_body {
     display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+#curve_chart {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+#alert {
+    padding: 10px;
+    border: 1px solid #f00;
+    background-color: #fee;
 }
